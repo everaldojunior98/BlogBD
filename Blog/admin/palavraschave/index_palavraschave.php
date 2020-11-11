@@ -26,6 +26,7 @@
         <?php
 			require('../../restrict.php');
 			require('../../header.php');
+			require('../../app/database/connection.php');
 		?>
     
         <!-- Admin Page wrapper -->
@@ -48,29 +49,28 @@
 
                     <table>
                         <thead>
-                            <th>Código</th>
-                            <th>Nome</th>
+                            <th>Id</th>
+                            <th>Chave</th>
                             <th colspan="2">Ações</th>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Hardware</td>
-                                <td><a href="#" class="edit">Editar</a></td>
-                                <td><a href="#" class="delete">Excluir</a></td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Software</td>
-                                <td><a href="#" class="edit">Editar</a></td>
-                                <td><a href="#" class="delete">Excluir</a></td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Para leigos</td>
-                                <td><a href="#" class="edit">Editar</a></td>
-                                <td><a href="#" class="delete">Excluir</a></td>
-                            </tr>
+						
+						<tbody>
+							<?php
+								$query = "SELECT * FROM palavrachave";
+
+								if ($result = $conn->query($query))
+								{
+									while ($row = $result->fetch_assoc())
+									{
+										echo "<tr><td>".$row['IdChave']."</td>";
+										echo "<td>".$row['Chave']."</td>";
+										echo "<td><a href=\"criar_palavrachave.php?id=".$row['IdChave']."&chave=".$row['Chave']."\" class=\"edit\">Editar</a></td>";
+										echo "<td><a href=\"deletar_palavrachave.php?id=".$row['IdChave']."\" class=\"delete\">Excluir</a></td></tr>";
+									}
+								
+									$result->free();
+								}
+							?>
                         </tbody>
                     </table>
 

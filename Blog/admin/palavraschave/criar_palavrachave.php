@@ -26,6 +26,51 @@
         <?php
 			require('../../restrict.php');
 			require('../../header.php');
+			require('../../app/database/connection.php');
+			
+			$erro = "";
+			
+			if($_SERVER["REQUEST_METHOD"] == "POST")
+			{
+				if(isset($_POST["chave"]))
+					$chave = mysqli_real_escape_string($conn, trim($_POST["chave"]));
+				
+				if(isset($_POST["id"]))
+					$id = mysqli_real_escape_string($conn, trim($_POST["id"]));
+				
+				if(!empty($chave))
+				{
+					if(!empty($id))
+					{
+						$query = "UPDATE palavrachave SET Chave = '$chave' WHERE IdChave = $id";
+						
+						if(mysqli_query($conn, $query))
+							header("location: index_palavraschave.php");
+						else
+							$erro = "Ocorreu um erro ao editar a palavra chave";
+					}
+					else
+					{
+						$query = "INSERT INTO palavrachave (IdChave, Chave) VALUES (NULL, '$chave')";
+						
+						if(mysqli_query($conn, $query))
+							header("location: index_palavraschave.php");
+						else
+							$erro = "Ocorreu um erro ao adicionar a palavra chave";
+					}
+				}
+				else
+				{
+					$erro = "Você deve preencher todos os campos";
+				}
+			}
+			else if($_SERVER["REQUEST_METHOD"] == "GET")
+			{
+				if(isset($_GET["id"]))
+					$id = mysqli_real_escape_string($conn, trim($_GET["id"]));
+				if(isset($_GET["chave"]))
+					$chave = mysqli_real_escape_string($conn, trim($_GET["chave"]));
+			}
 		?>
     
         <!-- Admin Page wrapper -->
@@ -40,20 +85,32 @@
 
                 <div class="content">
 
-                    <h2 class="page-title">Criando palavra chave</h2>
+                    <h2 class="page-title"><?php echo !empty($id) ? "Editar" : "Adicionar"?> palavra chave</h2>
 
-                    <form action="criar_topicos.html" method="post">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post">
+					
+						<?php
+							if(!empty($erro))
+							{
+								echo "<div class=\"msg error\">";
+								echo "<li>".$erro."</li>";
+								echo "</div>";
+							}
+							
+							if(!empty($id))
+							{
+								echo "<div>";
+								echo "<input type=\"hidden\" name=\"id\" value=\"".$id."\" class=\"text-input\">";
+								echo "</div>";
+							}
+						?>
+					
                         <div>
-                            <label>Palavra chave</label>
-                            <input type="text" name="name" class="text-input">
+                            <label>Chave</label>
+                            <input type="text" name="chave" <?php echo "value=\"".$chave."\"";?> class="text-input">
                         </div>
                         <div>
-                            <label>Descrição (opcional)</label>
-                            <textarea name="description" id="body">
-                            </textarea>
-                        </div>
-                        <div>
-                            <button type="submit" class="btn btn-big">Adicionar</button>
+                            <button type="submit" class="btn btn-big"><?php echo !empty($id) ? "Editar" : "Adicionar"?></button>
                         </div>
                     </form>
 

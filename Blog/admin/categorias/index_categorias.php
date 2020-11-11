@@ -64,8 +64,8 @@
 									{
 										echo "<tr><td>".$row['IdCategoria']."</td>";
 										echo "<td>".$row['Nome']."</td>";
-										echo "<td><a href=\"#\" class=\"edit\">Editar</a></td>";
-										echo "<td><a href=\"#\" class=\"delete\">Excluir</a></td></tr>";
+										echo "<td><a href=\"criar_categoria.php?id=".$row['IdCategoria']."&name=".$row['Nome']."\" class=\"edit\">Editar</a></td>";
+										echo "<td><a href=\"deletar_categoria.php?id=".$row['IdCategoria']."\" class=\"delete\">Excluir</a></td></tr>";
 									}
 								
 									$result->free();
