@@ -1,0 +1,22 @@
+Slick carousel: https://kenwheeler.github.io/slick/
+
+Inserindo plugin Facebook pages
+-------------------------------
+1 - Criar uma página dentro de sua conta Facebook
+2 - Abrir a página
+3 - Configurações (lado esquerdo)
+4 - Visibilidade da página (verdadeiro)
+5 - Abrir Facebook plugin page [ https://developers.facebook.com/docs/plugins/?locale=pt_BR ]
+6 - Clicar em Plugin de página [ https://developers.facebook.com/docs/plugins/page-plugin ]
+7 - Preencher a "URL da Página do Facebook" (do que você quer colocar como interação)
+7 - Clicar no botão (obter código)
+8 - Copiar a 1ª parte e colocar após <body>
+9 - Copiar a 2ª parte do código após <div class="sidebar single">
+
+CKEditor: https://ckeditor.com/
+-------------------------------
+CKEditor 5 [ https://ckeditor.com/ckeditor-5/ ]
+-> Download [ https://ckeditor.com/ckeditor-5/download/ ]
+-> Documentation [ https://ckeditor.com/docs/ckeditor5/latest/builds/ ]
+-> Configuration [ https://ckeditor.com/docs/ckeditor5/latest/builds/guides/integration/configuration.html ]
+--> Copiar o 1º bloco de códigos
