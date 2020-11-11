@@ -25,6 +25,7 @@
 
     <body>
         <?php
+			require('../../app/database/connection.php');
 			require('../../restrict.php');
 			require('../../header.php');
 		?>
@@ -40,7 +41,7 @@
             <div class="admin-content">
 
                 <div class="button-group">
-                    <a href="criar_posts.html" class="btn btn-big">Criar post</a>
+                    <a href="criar_posts.php" class="btn btn-big">Criar post</a>
                 </div>
 
                 <div class="content">
@@ -49,28 +50,33 @@
 
                     <table>
                         <thead>
-                            <th>Código</th>
+                            <th>Id</th>
                             <th>Título</th>
                             <th>Autor(a)</th>
-                            <th colspan="3">Ações</th>
+                            <th colspan="2">Ações</th>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Post 01</td>
-                                <td>Usuário</td>
-                                <td><a href="#" class="edit">Editar</a></td>
-                                <td><a href="#" class="delete">Excluir</a></td>
-                                <td><a href="#" class="publish">Publicar</a></td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Post 02</td>
-                                <td>Usuário</td>
-                                <td><a href="#" class="edit">Editar</a></td>
-                                <td><a href="#" class="delete">Excluir</a></td>
-                                <td><a href="#" class="publish">Publicar</a></td>
-                            </tr>
+							<?php
+								$query = "SELECT * FROM posts";
+
+								if ($result = $conn->query($query))
+								{
+									while ($row = $result->fetch_assoc())
+									{
+										echo "<tr><td>".$row['IdPost']."</td>";
+										echo "<td>".$row['Titulo']."</td>";
+										
+										$queryUser = "SELECT * FROM usuarios WHERE IdUsuario = ".$row['IdUsuario']." LIMIT 1";
+										$resultUser = mysqli_fetch_assoc(mysqli_query($conn, $queryUser));
+										
+										echo "<td>".$resultUser['Usuario']."</td>";
+										echo "<td><a href=\"criar_posts.php?id=".$row['IdPost']."\" class=\"edit\">Editar</a></td>";
+										echo "<td><a href=\"deletar_post.php?id=".$row['IdPost']."\" class=\"delete\">Excluir</a></td></tr>";
+									}
+								
+									$result->free();
+								}
+							?>
                         </tbody>
                     </table>
 

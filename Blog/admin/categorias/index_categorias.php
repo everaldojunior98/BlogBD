@@ -49,7 +49,7 @@
 
                     <table>
                         <thead>
-                            <th>Código</th>
+                            <th>Id</th>
                             <th>Nome</th>
                             <th colspan="2">Ações</th>
                         </thead>
