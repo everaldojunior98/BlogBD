@@ -18,7 +18,7 @@
         <!-- Admin Styling -->
         <link rel="stylesheet" href="../../css/estilos_admin.css">
 
-        <title>Palavras Chave</title>
+        <title>Categorias</title>
        
     </head>
 
@@ -26,6 +26,29 @@
         <?php
 			require('../../restrict.php');
 			require('../../header.php');
+			require('../../app/database/connection.php');
+			
+			$erro = "";
+			
+			if($_SERVER["REQUEST_METHOD"] == "POST")
+			{
+				if(isset($_POST["name"]))
+					$name = mysqli_real_escape_string($conn, trim($_POST["name"]));
+				
+				if(!empty($name))
+				{
+					$query = "INSERT INTO categoria (IdCategoria, Nome) VALUES (NULL, '$name');";
+					
+					if(mysqli_query($conn, $query))
+						header("location: index_categorias.php");
+					else
+						$erro = "Ocorreu um erro ao adicionar a categoria";
+				}
+				else
+				{
+					$erro = "Você deve preencher todos os campos";
+				}
+			}
 		?>
     
         <!-- Admin Page wrapper -->
@@ -40,17 +63,22 @@
 
                 <div class="content">
 
-                    <h2 class="page-title">Criando palavra chave</h2>
+                    <h2 class="page-title">Criando categoria</h2>
 
-                    <form action="criar_topicos.html" method="post">
+                    <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
+					
+						<?php
+							if(!empty($erro))
+							{
+								echo "<div class=\"msg error\">";
+								echo "<li>".$erro."</li>";
+								echo "</div>";
+							}
+						?>
+					
                         <div>
-                            <label>Palavra chave</label>
+                            <label>Nome</label>
                             <input type="text" name="name" class="text-input">
-                        </div>
-                        <div>
-                            <label>Descrição (opcional)</label>
-                            <textarea name="description" id="body">
-                            </textarea>
                         </div>
                         <div>
                             <button type="submit" class="btn btn-big">Adicionar</button>

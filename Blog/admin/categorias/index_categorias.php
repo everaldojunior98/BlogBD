@@ -18,7 +18,7 @@
         <!-- Admin Styling -->
         <link rel="stylesheet" href="../../css/estilos_admin.css">
 
-        <title>Palavras Chave</title>
+        <title>Categorias</title>
        
     </head>
 
@@ -26,6 +26,7 @@
         <?php
 			require('../../restrict.php');
 			require('../../header.php');
+			require('../../app/database/connection.php');
 		?>
     
         <!-- Admin Page wrapper -->
@@ -39,12 +40,12 @@
             <div class="admin-content">
 
                 <div class="button-group">
-                    <a href="criar_palavrachave.php" class="btn btn-big">Criar palavra chave</a>
+                    <a href="criar_categoria.php" class="btn btn-big">Criar categoria</a>
                 </div>
 
                 <div class="content">
 
-                    <h2 class="page-title">Central de palavras chave</h2>
+                    <h2 class="page-title">Central de categorias</h2>
 
                     <table>
                         <thead>
@@ -52,25 +53,24 @@
                             <th>Nome</th>
                             <th colspan="2">Ações</th>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Hardware</td>
-                                <td><a href="#" class="edit">Editar</a></td>
-                                <td><a href="#" class="delete">Excluir</a></td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Software</td>
-                                <td><a href="#" class="edit">Editar</a></td>
-                                <td><a href="#" class="delete">Excluir</a></td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>Para leigos</td>
-                                <td><a href="#" class="edit">Editar</a></td>
-                                <td><a href="#" class="delete">Excluir</a></td>
-                            </tr>
+						
+						<tbody>
+							<?php
+								$query = "SELECT * FROM categoria";
+
+								if ($result = $conn->query($query))
+								{
+									while ($row = $result->fetch_assoc())
+									{
+										echo "<tr><td>".$row['IdCategoria']."</td>";
+										echo "<td>".$row['Nome']."</td>";
+										echo "<td><a href=\"#\" class=\"edit\">Editar</a></td>";
+										echo "<td><a href=\"#\" class=\"delete\">Excluir</a></td></tr>";
+									}
+								
+									$result->free();
+								}
+							?>
                         </tbody>
                     </table>
 
