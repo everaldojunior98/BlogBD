@@ -93,7 +93,7 @@
                         <button type="submit" name="register-btn" class="btn btn-big">Entrar</button>
                     </div>
                     <div class="siu">
-                        Ou <a href="cadastrar.html"><u>Cadastre-se</u></a>
+                        Ou <a href="cadastrar.php"><u>Cadastre-se</u></a>
                     </div>
 
                 </form> <!-- // Formulário de autenticação -->

@@ -21,7 +21,56 @@
     </head>
 
     <body>
-        <?php include_once('header.php');?>
+		<?php
+			require('app/database/connection.php');
+			require('header.php');
+			
+			$erro = "";
+			
+			if($_SERVER["REQUEST_METHOD"] == "POST")
+			{
+				if(isset($_POST["username"]))
+					$username = mysqli_real_escape_string($conn, trim($_POST["username"]));
+				
+				if(isset($_POST["password"]))
+					$password = mysqli_real_escape_string($conn, trim($_POST["password"]));
+				
+				if(isset($_POST["passwordConf"]))
+					$passwordConf = mysqli_real_escape_string($conn, trim($_POST["passwordConf"]));
+				
+				if(isset($_POST["email"]))
+					$email = mysqli_real_escape_string($conn, trim($_POST["email"]));
+
+				if(!empty($username) && !empty($password) && !empty($passwordConf) && !empty($email))
+				{
+					if (filter_var($email, FILTER_VALIDATE_EMAIL))
+					{
+						if($password === $passwordConf)
+						{
+							$password = md5($password);
+							$query = "INSERT INTO usuarios (IdUsuario, Usuario, Email, Senha) VALUES (NULL, '$username', '$email', '$password')";
+
+							if(mysqli_query($conn, $query))
+								header("location: login.php");
+							else
+								$erro = "Ocorreu um erro ao adicionar o usuário";
+						}
+						else
+						{
+							$erro = "As senhas não são identicas";
+						}
+					}
+					else
+					{
+						$erro = "Digite um email válido";
+					}
+				}
+				else
+				{
+					$erro = "Você deve preencher todos os campos";
+				}
+			}
+		?>
     
         <!-- Page wrapper -->
         <div class="page-wrapper">
@@ -30,15 +79,18 @@
             <div class="auth-content">
                 
                 <!-- Formulário de autenticação -->
-                <form action="cadastrar.html" method="post">
+				<form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post">
 
                     <h2 class="form-title">Cadastro</h2>
 
-                    <!--
-                    <div class="msg error">
-                        <li>Username required</li>
-                    </div>
-                     -->
+					<?php
+						if(!empty($erro))
+						{
+							echo "<div class=\"msg error\">";
+							echo "<li>".$erro."</li>";
+							echo "</div>";
+						}
+					?>
 
                     <div>
                         <label>Usuário</label>

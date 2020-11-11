@@ -31,14 +31,9 @@
         <!-- Admin Page wrapper -->
         <div class="admin-wrapper">
             
-            <!-- Left sidebar -->
-            <div class="left-sidebar">
-                <ul>
-                    <li><a href="index_posts.html">Posts</a></li>
-                    <li><a href="../usuarios/index_usuarios.html">Usuários</a></li>
-                    <li><a href="../topicos/index_topicos.html">Tópicos</a></li>
-                </ul>
-            </div> <!-- // Left sidebar -->
+            <?php
+				require('../sidebar.php');
+			?>
             
             <!-- Admin content -->
             <div class="admin-content">
