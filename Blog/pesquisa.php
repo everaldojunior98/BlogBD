@@ -27,45 +27,6 @@
     
         <!-- Page wrapper -->
         <div class="page-wrapper">
-            
-            <!-- Post slider -->
-            <div class="post-slider">
-                
-                <h1 class="slider-title">Temos posts em alta</h1>
-                
-                <i class="fas fa-chevron-left prev"></i>
-                <i class="fas fa-chevron-right next"></i>
-                
-                <div class="post-wrapper">
-					<?php
-						$query = "SELECT * FROM visualizacoes ORDER BY Quantidade DESC LIMIT 5";
-
-						if ($result = $conn->query($query))
-						{
-							while ($row = $result->fetch_assoc())
-							{
-								$id = $row["IdPost"];
-								$query = "SELECT * FROM posts WHERE IdPost = $id LIMIT 1";
-								$post = mysqli_fetch_assoc(mysqli_query($conn, $query));
-								
-								$queryUser = "SELECT * FROM usuarios WHERE IdUsuario = ".$post['IdUsuario']." LIMIT 1";
-								$resultUser = mysqli_fetch_assoc(mysqli_query($conn, $queryUser));
-								
-								echo "<div class=\"post\">";
-								echo "<img src=\"imagens/img1.jpg\" alt=\"\" class=\"slider-image\">";
-								echo "<div class=\"post-info\">";
-								echo "<h4><a href=\"artigo.php?id=$id\">".$post["Titulo"]."</a></h4>";
-								echo "<i class=\"far fa-user\"> ".$resultUser['Usuario']." </i>";
-								echo "</div>";
-								echo "</div>";
-							}
-						
-							$result->free();
-						}
-					?>
-                </div>
-
-            </div>  <!-- // Post slider -->
 
             <!-- Content -->
             <div class="content clearfix">
@@ -73,29 +34,60 @@
                 <!-- Main content -->
                 <div class="main-content">
 
-                    <h1 class="recent-post-title">Posts recentes</h1>
+                    <h1 class="recent-post-title">Resultados da pesquisa</h1>
 
 					<?php
-						$query = "SELECT * FROM posts ORDER BY IdPost DESC LIMIT 5";
+						$category = $_GET["c"];
+						$search = $_POST["search-term"];
 						
-						if ($result = $conn->query($query))
+						if(!empty($category))
 						{
-							while ($row = $result->fetch_assoc())
+							$query = "SELECT * FROM posts WHERE IdCategoria = $category ORDER BY IdPost DESC";
+							
+							if ($result = $conn->query($query))
 							{
-								$queryUser = "SELECT * FROM usuarios WHERE IdUsuario = ".$row['IdUsuario']." LIMIT 1";
-								$resultUser = mysqli_fetch_assoc(mysqli_query($conn, $queryUser));
-								
-								echo "<div class=\"post clearfix\">";
-									echo "<img src=\"imagens/img1.jpg\" alt=\"\" class=\"post-image\">";
-									echo "<div class=\"post-preview\">";
-										echo "<h1><a href=\"artigo.php?id=".$row["IdPost"]."\">".$row["Titulo"]."</a></h1>";
-										echo "<i class=\"fa fa-user\"> ".$resultUser['Usuario']." </i>";
-										echo "&nbsp;";
-										echo "<p class=\"preview-text\">".$row['Conteudo']."</p>";
-										echo "<a href=\"artigo.php?id=".$row["IdPost"]."\" class=\"btn read-more\">Leia +</a>";
+								while ($row = $result->fetch_assoc())
+								{
+									$queryUser = "SELECT * FROM usuarios WHERE IdUsuario = ".$row['IdUsuario']." LIMIT 1";
+									$resultUser = mysqli_fetch_assoc(mysqli_query($conn, $queryUser));
+									
+									echo "<div class=\"post clearfix\">";
+										echo "<img src=\"imagens/img1.jpg\" alt=\"\" class=\"post-image\">";
+										echo "<div class=\"post-preview\">";
+											echo "<h1><a href=\"artigo.php?id=".$row["IdPost"]."\">".$row["Titulo"]."</a></h1>";
+											echo "<i class=\"fa fa-user\"> ".$resultUser['Usuario']." </i>";
+											echo "&nbsp;";
+											echo "<p class=\"preview-text\">".$row['Conteudo']."</p>";
+											echo "<a href=\"artigo.php?id=".$row["IdPost"]."\" class=\"btn read-more\">Leia +</a>";
+										echo "</div>";
 									echo "</div>";
-								echo "</div>";
-								
+									
+								}
+							}
+						}
+						else if(!empty($search))
+						{
+							$query = "SELECT * FROM posts WHERE Conteudo LIKE '$search%' OR Conteudo LIKE '%$search' OR Conteudo LIKE '%$search%'";
+							
+							if ($result = $conn->query($query))
+							{
+								while ($row = $result->fetch_assoc())
+								{
+									$queryUser = "SELECT * FROM usuarios WHERE IdUsuario = ".$row['IdUsuario']." LIMIT 1";
+									$resultUser = mysqli_fetch_assoc(mysqli_query($conn, $queryUser));
+									
+									echo "<div class=\"post clearfix\">";
+										echo "<img src=\"imagens/img1.jpg\" alt=\"\" class=\"post-image\">";
+										echo "<div class=\"post-preview\">";
+											echo "<h1><a href=\"artigo.php?id=".$row["IdPost"]."\">".$row["Titulo"]."</a></h1>";
+											echo "<i class=\"fa fa-user\"> ".$resultUser['Usuario']." </i>";
+											echo "&nbsp;";
+											echo "<p class=\"preview-text\">".$row['Conteudo']."</p>";
+											echo "<a href=\"artigo.php?id=".$row["IdPost"]."\" class=\"btn read-more\">Leia +</a>";
+										echo "</div>";
+									echo "</div>";
+									
+								}
 							}
 						}
 					?>					

@@ -195,7 +195,7 @@ header .menu-toggle {
 
 .post-slider .post-wrapper{
     width: 84%;
-    height: 350px;
+    height: 280px;
     margin:  0px auto;
     overflow: hidden;
     padding: 10px 0px 10px 0px;
@@ -500,7 +500,7 @@ header .menu-toggle {
 /* CLEARFIX */
 
 .clearfix {
-    overflow: auto;
+    /*overflow: auto;*/
     zoom: 1;
  }
 

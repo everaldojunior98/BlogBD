@@ -26,7 +26,36 @@
         <div id="fb-root"></div>
         <script async defer crossorigin="anonymous" src="https://connect.facebook.net/pt_BR/sdk.js#xfbml=1&version=v8.0&appId=155361921631930&autoLogAppEvents=1" nonce="YyVKbLA6"></script>
 
-        <?php include_once('header.php');?>
+        <?php
+			require('app/database/connection.php');
+			require('header.php');
+			
+			
+			if($_SERVER["REQUEST_METHOD"] == "POST")
+			{
+				if(isset($_POST["message"]))
+					$message = mysqli_real_escape_string($conn, trim($_POST["message"]));
+				
+				if(isset($_POST["id"]))
+					$id = mysqli_real_escape_string($conn, trim($_POST["id"]));
+				
+				if(!empty($id) && !empty($message))
+				{
+					$query = "INSERT INTO comentario (IdComentario, IdUsuario, Comentario) VALUES (NULL, '".$_SESSION["id"]."', '$message')";
+					
+					if(mysqli_query($conn, $query))
+					{
+						$lastId = mysqli_insert_id($conn);
+						$query = "INSERT INTO comentariosporpost (IdPost, IdComentario) VALUES ('$id', '$lastId')";
+					
+						if(mysqli_query($conn, $query))
+						{
+							header("location: artigo.php?id=$id");
+						}
+					}
+				}
+			}
+		?>
     
         <!-- Page wrapper -->
         <div class="page-wrapper">
@@ -39,79 +68,105 @@
                 
                     <!-- Main content -->
                     <div class="main-content single">
-
-                        <h1 class="post-title">Título do post</h1>  
+						<?php
+							$id = $_GET['id'];
+							$query = "SELECT * FROM posts WHERE IdPost = $id LIMIT 1";
+							$post = mysqli_fetch_assoc(mysqli_query($conn, $query));
+														
+							echo "<h1 class=\"post-title\">".$post["Titulo"]."</h1>"; 
                         
-                        <div class="post-content">
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                            <p>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</p>
-                        </div>
+							echo "<div class=\"post-content\">";
+							echo $post["Conteudo"];
+							echo "</div>";
+						?>
+						
+						
+                    </div>
+					<div class="main-content single" style="margin-top:20px">
+						<div class="footer-section contact-form">
+							<h3>Comentários</h3>
+							<div class="post-content">
+								<?php
+									$query = "SELECT * FROM comentariosporpost WHERE IdPost = ".$_GET["id"];
 
-                    </div> <!-- // Main content -->
+									if ($result = $conn->query($query))
+									{
+										while ($row = $result->fetch_assoc())
+										{
+											$queryCom = "SELECT * FROM comentario WHERE IdComentario = ".$row["IdComentario"]." LIMIT 1";
+											$resultCom = mysqli_fetch_assoc(mysqli_query($conn, $queryCom));
+											
+											$queryUser = "SELECT * FROM usuarios WHERE IdUsuario = ".$resultCom['IdUsuario']." LIMIT 1";
+											$resultUser = mysqli_fetch_assoc(mysqli_query($conn, $queryUser));
+											
+											$queryUser2 = "SELECT * FROM usuarios WHERE IdUsuario = ".$post['IdUsuario']." LIMIT 1";
+											$resultUser2 = mysqli_fetch_assoc(mysqli_query($conn, $queryUser2));
+											
+											if($_SESSION["id"] == $resultCom['IdUsuario'] || $_SESSION["id"] == $resultUser2['IdUsuario'])
+											{
+												echo $resultUser["Usuario"]." : ".$resultCom["Comentario"]." <a href=\"deletar_comentario.php?id=".$row['IdComentario']."&a=$id\" class=\"delete\">[Excluir]</a></br></br>";
+											}
+											else
+											{
+												echo $resultUser["Usuario"]." : ".$resultCom["Comentario"]."</br></br>";
+											}
+											
+											
+										}
+									}
+								?>
+							</div>
+						</div>
+                    </div>
+					
+					<div class="main-content single" style="margin-top:20px">
+						<div class="footer-section contact-form">
+							<h3>Adicione um comentario</h3>
+							
+							<?php
+								if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true)
+								{
+									echo "<form action=\"".htmlspecialchars($_SERVER["PHP_SELF"])."\" method=\"post\">";
+									echo "<input type=\"hidden\" name=\"id\" value=\"".$_GET["id"]."\">";
+									echo "<textarea rows=\"4\" name=\"message\" class=\"text-input contact-input\" placeholder=\"Sua mensagem\"></textarea>";
+									echo "<button type=\"submit\" class=\"btn btn-big contact-btn\">";
+									echo "<i class=\"fas fa-envelope\"></i>";
+									echo "Enviar";
+									echo "</button>";
+									echo "</form>";
+								}
+								else
+								{
+									echo "</br><h4>Faça login para comentar</h4>";
+								}
+							?>
+						</div>
+                    </div>
                 
                 </div> <!-- // Main content wrappe -->
 
                 <!-- Sidebar -->
                 <div class="sidebar single">
-
-                    <div class="fb-page" data-href="https://www.facebook.com/profjeffers0n/" data-tabs="" data-width="" data-height="" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/profjeffers0n/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/profjeffers0n/">Prof. Jefferson</a></blockquote></div>
-
                     <div class="section popular">
-                        
                         <h2 class="section-title">Popular</h2>
                         
-                        <div class="post clearfix">
-                            <img src="imagens/img1.jpg" alt="">
-                            <a href="#" class="title"><h4>Artigo 1</h4></a>
-                        </div>
-                        <div class="post clearfix">
-                            <img src="imagens/img1.jpg" alt="">
-                            <a href="#" class="title"><h4>Artigo 2</h4></a>
-                        </div>
-                        <div class="post clearfix">
-                            <img src="imagens/img1.jpg" alt="">
-                            <a href="#" class="title"><h4>Artigo 3</h4></a>
-                        </div>
-                        <div class="post clearfix">
-                            <img src="imagens/img1.jpg" alt="">
-                            <a href="#" class="title"><h4>Artigo 4</h4></a>
-                        </div>
-                        <div class="post clearfix">
-                            <img src="imagens/img1.jpg" alt="">
-                            <a href="#" class="title"><h4>Artigo 5</h4></a>
-                        </div>
-                        <div class="post clearfix">
-                            <img src="imagens/img1.jpg" alt="">
-                            <a href="#" class="title"><h4>Artigo 6</h4></a >
-                        </div>
-                        
+						<?php
+							$query = "SELECT * FROM posts ORDER BY IdPost DESC LIMIT 5";
+						
+							if ($result = $conn->query($query))
+							{
+								while ($row = $result->fetch_assoc())
+								{
+									echo "<div class=\"post clearfix\">";
+									echo "<img src=\"imagens/img1.jpg\" alt=\"\">";
+									echo "<a href=\"artigo.php?id=".$row["IdPost"]."\" class=\"title\"><h4>".$row["Titulo"]."</h4></a>";
+									echo "</div>";
+								}
+							}
+						?>
                     </div>
 
-                    <div class="section topics">
-
-                        <h2 class="section-title">Tópicos</h2>
-                        <ul>
-                            <li><a href="#">Hardware</a></li>
-                            <li><a href="#">Sofware</a></li>
-                            <li><a href="#">Programação</a></li>
-                            <li><a href="#">Para leigos</a></li>
-                        </ul>
-                        
-                    </div>
+                    <?php require('categorias.php');?>
 
                 </div> <!-- // Sidebar -->
 
@@ -127,7 +182,7 @@
                 <div class="footer-section about">
                     <h1 class="logo-text"><span>Tec</span>nologia</h1>
                     <p>
-                        Texto
+                        ###############
                     </p>
                     <div class="contact">
                         <span><i class="fas fa-phone"></i>&nbsp; (00) 0-0000-000 </span>
