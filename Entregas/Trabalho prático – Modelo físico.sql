@@ -1,13 +1,13 @@
 /* Modelo físico - BLOG */
 
-CREATE TABLE Usuarios (
+CREATE TABLE usuarios (
     IdUsuario INTEGER(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
     Usuario varchar(255),
     Email varchar(255),
     Senha varchar(255)
 );
 
-CREATE TABLE Posts (
+CREATE TABLE posts (
     IdPost INTEGER(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
     IdUsuario INTEGER(11),
     IdCategoria INTEGER(11),
@@ -15,73 +15,73 @@ CREATE TABLE Posts (
     Conteudo varchar(255)
 );
 
-CREATE TABLE Categoria (
+CREATE TABLE categoria (
     IdCategoria INTEGER(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
     Nome varchar(255)
 );
 
-CREATE TABLE PalavraChave (
+CREATE TABLE palavrachave (
     IdChave INTEGER(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
     Chave varchar(255)
 );
 
-CREATE TABLE Visualizacoes (
+CREATE TABLE visualizacoes (
     IdPost INTEGER(11),
     Quantidade INTEGER(11)
 );
 
-CREATE TABLE Comentario (
+CREATE TABLE comentario (
     IdComentario INTEGER(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
     IdUsuario INTEGER(11),
     Comentario varchar(255)
 );
 
-CREATE TABLE PalavrasChavePorPost (
+CREATE TABLE palavraschaveporpost (
     IdChave INTEGER(11),
     IdPost INTEGER(11)
 );
 
-CREATE TABLE ComentariosPorPost (
+CREATE TABLE comentariosporpost (
     IdPost INTEGER(11),
     IdComentario INTEGER(11)
 );
  
-ALTER TABLE Posts ADD CONSTRAINT FK_Posts_1
+ALTER TABLE posts ADD CONSTRAINT FK_Posts_1
     FOREIGN KEY (IdUsuario)
-    REFERENCES Usuarios (IdUsuario)
+    REFERENCES usuarios (IdUsuario)
     ON DELETE RESTRICT;
  
- ALTER TABLE Posts ADD CONSTRAINT FK_Posts_2
+ ALTER TABLE posts ADD CONSTRAINT FK_Posts_2
     FOREIGN KEY (IdCategoria)
-    REFERENCES Categoria (IdCategoria)
+    REFERENCES categoria (IdCategoria)
     ON DELETE RESTRICT;
 	
-ALTER TABLE Visualizacoes ADD CONSTRAINT FK_Visualizacoes_1
+ALTER TABLE visualizacoes ADD CONSTRAINT FK_Visualizacoes_1
     FOREIGN KEY (IdPost)
-    REFERENCES Posts (IdPost)
+    REFERENCES posts (IdPost)
     ON DELETE RESTRICT;
 	
-ALTER TABLE Comentario ADD CONSTRAINT FK_Comentario_1
+ALTER TABLE comentario ADD CONSTRAINT FK_Comentario_1
     FOREIGN KEY (IdUsuario)
-    REFERENCES Usuarios (IdUsuario)
+    REFERENCES usuarios (IdUsuario)
     ON DELETE RESTRICT;
  
-ALTER TABLE PalavrasChavePorPost ADD CONSTRAINT FK_PalavrasChavePorPost_1
+ALTER TABLE palavraschaveporpost ADD CONSTRAINT FK_PalavrasChavePorPost_1
     FOREIGN KEY (IdChave)
-    REFERENCES PalavraChave (IdChave)
+    REFERENCES palavrachave (IdChave)
     ON DELETE RESTRICT;
  
-ALTER TABLE PalavrasChavePorPost ADD CONSTRAINT FK_PalavrasChavePorPost_2
+ALTER TABLE palavraschaveporpost ADD CONSTRAINT FK_PalavrasChavePorPost_2
     FOREIGN KEY (IdPost)
-    REFERENCES Posts (IdPost)
+    REFERENCES posts (IdPost)
     ON DELETE RESTRICT;
  
-ALTER TABLE ComentariosPorPost ADD CONSTRAINT FK_ComentariosPorPost_1
+ALTER TABLE comentariosporpost ADD CONSTRAINT FK_ComentariosPorPost_1
     FOREIGN KEY (IdPost)
-    REFERENCES Posts (IdPost)
+    REFERENCES posts (IdPost)
     ON DELETE RESTRICT;
  
-ALTER TABLE ComentariosPorPost ADD CONSTRAINT FK_ComentariosPorPost_2
+ALTER TABLE comentariosporpost ADD CONSTRAINT FK_ComentariosPorPost_2
     FOREIGN KEY (IdComentario)
-    REFERENCES Comentario (IdComentario)
+    REFERENCES comentario (IdComentario)
     ON DELETE SET NULL;
